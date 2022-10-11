@@ -1,37 +1,19 @@
-name: SYSU_Health_Report
+name: health report
 
-# branding:
-#   icon: thermometer
-#   color: green
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '30 23 * * *'
+  workflow_dispatch:
 
-inputs:
-  netid:
-    description: 'Your netid'
-    required: true
-  password:
-    description: 'Your password'
-    required: true
-  tg_bot_token:
-    description: 'Token of Telegram Bot'
-    required: false
-    default: 'False'
-  tg_chatid:
-    description: 'Unique identifier for the target chat'
-    required: false
-    default: 'False'
-
-runs:
-  using: "composite"
-  steps:
-    - shell: powershell
-      env:
-        NETID: ${{ inputs.netid }}
-        PASSWORD: ${{ inputs.password }}
-        TG_BOT_TOKEN: ${{ inputs.tg_bot_token }}
-        TG_CHATID: ${{ inputs.tg_chatid }}
-        PYTHONIOENCODING: utf-8
-        PYTHONLEGACYWINDOWSSTDIO: utf-8
-      run: | 
-        pip install -r ${{ github.action_path }}\requirements.txt
-        Set-TimeZone -Name "China Standard Time"
-        python ${{ github.action_path }}\jksb_sysu.py
+jobs:
+  report:
+    runs-on: windows-latest
+    steps:
+    - name: Health Report
+      uses: Editst/SYSU-HealthReport@master
+      with:
+        netid: ${{secrets.NETID}}
+        password: ${{secrets.PASSWORD}}
+        tg_bot_token: ${{secrets.TG_BOT_TOKEN}}
+        tg_chatid: ${{secrets.TG_CHATID}}
